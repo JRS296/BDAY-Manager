@@ -1,9 +1,32 @@
+import email
 import sqlite3
 import csv
 from tempfile import tempdir
 import time
+from unicodedata import name
 import pandas as pd
 import os.path
+import smtplib
+import datetime
+from win10toast import ToastNotifier
+
+GMAIL_ID = 'joeysamuel.gaming1@gmail.com'
+GMAIL_PWD = 'P@m@2018'
+
+toast = ToastNotifier()
+
+def sendEmail(to, sub, msg):
+   
+    gmail_obj = smtplib.SMTP('smtp.gmail.com', 587)
+    gmail_obj.starttls()    
+    gmail_obj.login(GMAIL_ID, GMAIL_PWD)  
+    gmail_obj.sendmail(GMAIL_ID, to, f"Subject : {sub}\n\n{msg}")
+    gmail_obj.quit() 
+     
+    print("Email sent to: " + str(to) + " Successfully, with subject " + str(sub) + " and message: " + str(msg))
+    toast.show_toast("Email Sent Successfully! " , str(to)+" was sent an e-mail", threaded = True, icon_path = None, duration = 6)
+    while toast.notification_active():
+        time.sleep(0.1)
 
 
 con = sqlite3.connect("BDAY.db")
@@ -34,7 +57,29 @@ while (y == 1):
     print()
 
     if (val == '1'):
-        print("HEllo")
+        print("Preparing Mail...")
+        df = pd.read_sql_query("SELECT * from BIRTHDAY", con)
+        today = datetime.datetime.now().strftime("%d.%m")
+        yearNow = datetime.datetime.now().strftime("%d.%m.%Y")
+        writeInd = []  
+
+        print("Checking if there are any birthdays today...")
+        for row in cur.execute("SELECT * FROM BIRTHDAY WHERE key != 1"):
+            bday = bday2 = str(row[3])
+            bday = bday[:-5]
+            #print(bday)
+            name_first = row[1]
+            Email = row[5]
+            
+            if (today == bday):   
+                msg = "Happy Birthday dear " + str(name_first) + "!! Have a great year ahead and may God bless! :)"
+                print("Basic Template: ",msg)
+                print("Name: ",name_first)
+                print("Bday: ",bday2)
+                print("Email: ",Email)
+                sendEmail(Email, "Happy Birthday!!!", msg)  
+                writeInd.append("Name: "+name_first+ " Date: "+today);   
+                print()                              
 
     elif (val == '2'):
         #for row in cur.execute("SELECT * FROM BIRTHDAY"):
@@ -93,6 +138,7 @@ while (y == 1):
 
     elif (val == '4'):
         print("Getting Ready for Update...")
+        #time.sleep(5)
         f = open('test.csv', 'w+')
         f.truncate()
         writer = csv.writer(f)
