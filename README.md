@@ -22,3 +22,5 @@ Would like to thank the GDSC Recruitment team for this opportunity, had a lot of
 
 Jonathan Rufus Samuel 
 (20BCT0332)
+
+GDSC Specific Link: https://dscv.it/kiseqasi
