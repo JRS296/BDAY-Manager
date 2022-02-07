@@ -9,18 +9,25 @@ import os.path
 import smtplib
 import datetime
 from win10toast import ToastNotifier
+import getpass
+
+global GMAIL_ID  
+global GMAIL_PWD 
 
 GMAIL_ID = 'joeysamuel.gaming1@gmail.com'
-GMAIL_PWD = 'P@m@2018'
-
+GMAIL_PWD = ''
 toast = ToastNotifier()
 
-def sendEmail(to, sub, msg):
-   
+def sendEmail(to, sub, msg, g, p):
     gmail_obj = smtplib.SMTP('smtp.gmail.com', 587)
     gmail_obj.starttls()    
-    gmail_obj.login(GMAIL_ID, GMAIL_PWD)  
-    gmail_obj.sendmail(GMAIL_ID, to, f"Subject : {sub}\n\n{msg}")
+    print("Current Gmail Account: " + g)
+    val3 = input("Change user? [y/n]")
+    if (val3 == 'Y' or val3 == 'y'):
+        g = input("Enter Gmail User ID: ")
+    p = getpass.getpass()
+    gmail_obj.login(g, p)  
+    gmail_obj.sendmail(g, to, f"Subject : {sub}\n\n{msg}")
     gmail_obj.quit() 
      
     print("Email sent to: " + str(to) + " Successfully, with subject " + str(sub) + " and message: " + str(msg))
@@ -28,6 +35,8 @@ def sendEmail(to, sub, msg):
     while toast.notification_active():
         time.sleep(0.1)
 
+GMAIL_ID = 'joeysamuel.gaming1@gmail.com'
+GMAIL_PWD = ''
 
 con = sqlite3.connect("BDAY.db")
 cur = con.cursor()
@@ -77,7 +86,7 @@ while (y == 1):
                 print("Name: ",name_first)
                 print("Bday: ",bday2)
                 print("Email: ",Email)
-                sendEmail(Email, "Happy Birthday!!!", msg)  
+                sendEmail(Email, "Happy Birthday!!!", msg, GMAIL_ID, GMAIL_ID)  
                 writeInd.append("Name: "+name_first+ " Date: "+today);   
                 print()                              
 
